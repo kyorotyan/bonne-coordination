@@ -1,7 +1,10 @@
+#バージョンによって書き方が異なる
 version: '3.9'
 
+#サービスとはアプリケーションを動かすための要素
 services:
   web:
+    #コンテナを起動するDocker Image
     image: nginx:1.23.0
     container_name: web
     depends_on:
@@ -12,6 +15,7 @@ services:
       - backend
     volumes:
       - "./web/nginx.conf:/etc/nginx/conf.d/default.conf"
+    #ポートの開放左にホストのポート右にコンテナのポート
     ports:
       - 80:80
   frontend:
@@ -28,6 +32,7 @@ services:
     image: golang:1.19.1
     container_name: backend
     working_dir: /app
+    #Service同士の依存関係
     depends_on:
       - db
     links:
@@ -40,13 +45,17 @@ services:
   db:
     image: postgres:14.4
     container_name: db
+    #実行時に再起動するか
     restart: always
+    #DBについての環境変数設定
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_INITDB_ARGS="--encoding=UTF8"
+    #マウントする設定ファイルのパスを指定
     volumes: 
       - './db/init.sql:/docker-entrypoint-initdb.d/create_tables.sql'
+    #DBの
     ports:
       - 5432:5432
     tty: true
